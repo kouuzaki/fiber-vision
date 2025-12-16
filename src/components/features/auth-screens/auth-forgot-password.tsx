@@ -1,6 +1,5 @@
 "use client";
 
-import GoogleIcon from "@/components/assets/google-icon";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -18,23 +17,22 @@ import {
   FieldLabel,
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
-import { authLoginSchema } from "@/schemas/auth/auth-login";
+import { authForgotPasswordSchema } from "@/schemas/auth/auth-forgot-password";
 import { useForm } from "@tanstack/react-form";
 import Link from "next/link";
 import React from "react";
 
-export function AuthLogin() {
+export function AuthForgotPassword() {
   const form = useForm({
     defaultValues: {
       email: "",
-      password: "",
     },
     validators: {
-      onSubmit: authLoginSchema,
+      onSubmit: authForgotPasswordSchema,
     },
     onSubmit: async ({ value }) => {
       console.log("Form submitted:", value);
-      // Handle login logic here
+      // Handle forgot password logic here
     },
   });
 
@@ -42,9 +40,10 @@ export function AuthLogin() {
     <section>
       <Card className="w-full max-w-md">
         <CardHeader className="text-center">
-          <CardTitle className="text-2xl">Sign In</CardTitle>
+          <CardTitle className="text-2xl">Forgot Password</CardTitle>
           <CardDescription>
-            Welcome back! Please enter your details.
+            Enter your email address and we&apos;ll send you a link to reset
+            your password.
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -54,7 +53,7 @@ export function AuthLogin() {
               e.stopPropagation();
               form.handleSubmit();
             }}
-            id="login-form"
+            id="forgot-password-form"
           >
             <FieldGroup>
               <form.Field name="email">
@@ -79,55 +78,16 @@ export function AuthLogin() {
                   );
                 }}
               </form.Field>
-
-              <form.Field name="password">
-                {(fieldApi) => {
-                  const isInvalid =
-                    fieldApi.state.meta.isTouched &&
-                    fieldApi.state.meta.errors.length > 0;
-
-                  return (
-                    <Field data-invalid={isInvalid}>
-                      <div className="flex items-center justify-between">
-                        <FieldLabel htmlFor="password">Password</FieldLabel>
-                        <FieldLabel>
-                          <Link
-                            href="/auth/forgot-password"
-                            className="hover:underline underline-offset-4"
-                          >
-                            Forgot password?
-                          </Link>
-                        </FieldLabel>
-                      </div>
-                      <Input
-                        type="password"
-                        id="password"
-                        variant="password"
-                        value={fieldApi.state.value}
-                        onBlur={fieldApi.handleBlur}
-                        onChange={(e) => fieldApi.handleChange(e.target.value)}
-                        aria-invalid={isInvalid}
-                        placeholder="Enter your password"
-                      />
-                      <FieldError errors={fieldApi.state.meta.errors} />
-                    </Field>
-                  );
-                }}
-              </form.Field>
             </FieldGroup>
           </form>
           <div className="flex justify-center py-5">
-            <CardAction className="w-full flex flex-col gap-2">
-              <Button className="w-full" type="submit" form="login-form">
-                Sign In
-              </Button>
+            <CardAction className="w-full">
               <Button
-                variant="secondary"
-                className="w-full flex items-center gap-2"
-                type="button"
+                className="w-full"
+                type="submit"
+                form="forgot-password-form"
               >
-                <GoogleIcon size={20} />
-                <span>Login With Google</span>
+                Send Reset Link
               </Button>
             </CardAction>
           </div>
@@ -135,10 +95,10 @@ export function AuthLogin() {
         <CardFooter className="flex justify-center border-t">
           <div className="flex items-center gap-2">
             <span className="text-muted-foreground">
-              Don&apos;t have an account?
+              Remember your password?
             </span>
-            <Link href="/auth/signup" className="hover:underline">
-              Sign Up
+            <Link href="/auth/login" className="hover:underline">
+              Sign In
             </Link>
           </div>
         </CardFooter>

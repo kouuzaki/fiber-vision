@@ -18,23 +18,25 @@ import {
   FieldLabel,
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
-import { authLoginSchema } from "@/schemas/auth/auth-login";
+import { InputPasswordLabel } from "@/components/ui/input-password-label";
+import { authSignupSchema } from "@/schemas/auth/auth-signup";
 import { useForm } from "@tanstack/react-form";
 import Link from "next/link";
 import React from "react";
 
-export function AuthLogin() {
+export function AuthSignup() {
   const form = useForm({
     defaultValues: {
       email: "",
       password: "",
+      confirmPassword: "",
     },
     validators: {
-      onSubmit: authLoginSchema,
+      onSubmit: authSignupSchema,
     },
     onSubmit: async ({ value }) => {
       console.log("Form submitted:", value);
-      // Handle login logic here
+      // Handle signup logic here
     },
   });
 
@@ -42,9 +44,9 @@ export function AuthLogin() {
     <section>
       <Card className="w-full max-w-md">
         <CardHeader className="text-center">
-          <CardTitle className="text-2xl">Sign In</CardTitle>
+          <CardTitle className="text-2xl">Create Account</CardTitle>
           <CardDescription>
-            Welcome back! Please enter your details.
+            Sign up to get started with your account.
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -54,7 +56,7 @@ export function AuthLogin() {
               e.stopPropagation();
               form.handleSubmit();
             }}
-            id="login-form"
+            id="signup-form"
           >
             <FieldGroup>
               <form.Field name="email">
@@ -88,26 +90,40 @@ export function AuthLogin() {
 
                   return (
                     <Field data-invalid={isInvalid}>
-                      <div className="flex items-center justify-between">
-                        <FieldLabel htmlFor="password">Password</FieldLabel>
-                        <FieldLabel>
-                          <Link
-                            href="/auth/forgot-password"
-                            className="hover:underline underline-offset-4"
-                          >
-                            Forgot password?
-                          </Link>
-                        </FieldLabel>
-                      </div>
+                      <FieldLabel htmlFor="password">Password</FieldLabel>
+                      <InputPasswordLabel
+                        value={fieldApi.state.value}
+                        onBlur={fieldApi.handleBlur}
+                        onChange={(e) => fieldApi.handleChange(e.target.value)}
+                        aria-invalid={isInvalid}
+                        placeholder="Create a password"
+                      />
+                      <FieldError errors={fieldApi.state.meta.errors} />
+                    </Field>
+                  );
+                }}
+              </form.Field>
+
+              <form.Field name="confirmPassword">
+                {(fieldApi) => {
+                  const isInvalid =
+                    fieldApi.state.meta.isTouched &&
+                    fieldApi.state.meta.errors.length > 0;
+
+                  return (
+                    <Field data-invalid={isInvalid}>
+                      <FieldLabel htmlFor="confirmPassword">
+                        Confirm Password
+                      </FieldLabel>
                       <Input
+                        id="confirmPassword"
                         type="password"
-                        id="password"
                         variant="password"
                         value={fieldApi.state.value}
                         onBlur={fieldApi.handleBlur}
                         onChange={(e) => fieldApi.handleChange(e.target.value)}
                         aria-invalid={isInvalid}
-                        placeholder="Enter your password"
+                        placeholder="Re-enter your password"
                       />
                       <FieldError errors={fieldApi.state.meta.errors} />
                     </Field>
@@ -118,8 +134,8 @@ export function AuthLogin() {
           </form>
           <div className="flex justify-center py-5">
             <CardAction className="w-full flex flex-col gap-2">
-              <Button className="w-full" type="submit" form="login-form">
-                Sign In
+              <Button className="w-full" type="submit" form="signup-form">
+                Create Account
               </Button>
               <Button
                 variant="secondary"
@@ -127,7 +143,7 @@ export function AuthLogin() {
                 type="button"
               >
                 <GoogleIcon size={20} />
-                <span>Login With Google</span>
+                <span>Sign Up With Google</span>
               </Button>
             </CardAction>
           </div>
@@ -135,10 +151,10 @@ export function AuthLogin() {
         <CardFooter className="flex justify-center border-t">
           <div className="flex items-center gap-2">
             <span className="text-muted-foreground">
-              Don&apos;t have an account?
+              Already have an account?
             </span>
-            <Link href="/auth/signup" className="hover:underline">
-              Sign Up
+            <Link href="/auth/login" className="hover:underline">
+              Sign In
             </Link>
           </div>
         </CardFooter>

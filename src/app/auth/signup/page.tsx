@@ -1,10 +1,10 @@
 import { AuthBase } from "@/components/features/auth-screens/auth-base";
-import { AuthLogin } from "@/components/features/auth-screens/auth-login";
+import { AuthSignup } from "@/components/features/auth-screens/auth-signup";
 import { BGPattern } from "@/components/ui/bg-pattern";
 import { AudioLinesIcon } from "lucide-react";
 import React from "react";
 
-export default function LoginPage() {
+export default function SignupPage() {
   return (
     <div>
       <BGPattern variant="dots" mask="fade-bottom" size={50} />
@@ -13,7 +13,7 @@ export default function LoginPage() {
           <AudioLinesIcon size={50} />
           <h1 className="text-2xl font-bold">Fiber Vision</h1>
         </div>
-        <AuthLogin />
+        <AuthSignup />
       </AuthBase>
     </div>
   );
