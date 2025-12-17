@@ -7,6 +7,9 @@ export const env = createEnv({
    * These are only available on the server
    */
   server: {
+    // Application Name
+    APP_NAME: z.string().min(1),
+    
     // Database
     DATABASE_HOST: z.string().min(1),
     DATABASE_PORT: z.coerce.number().default(5432),
@@ -39,6 +42,9 @@ export const env = createEnv({
    * Manual destructuring of process.env is required for Next.js edge runtime
    */
   runtimeEnv: {
+    // Application Name
+    APP_NAME: process.env.APP_NAME,
+    
     // Database
     DATABASE_HOST: process.env.DATABASE_HOST,
     DATABASE_PORT: process.env.DATABASE_PORT,

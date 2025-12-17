@@ -11,5 +11,6 @@ export default defineConfig({
     user: env.DATABASE_USER,
     password: env.DATABASE_PASSWORD,
     database: env.DATABASE_NAME,
+    ssl: false,
   },
 });
