@@ -26,6 +26,14 @@ export const env = createEnv({
     
     // Node environment
     NODE_ENV: z.enum(["development", "production", "test"]).default("development"),
+    
+    // SMTP Configuration
+    SMTP_HOST: z.string().min(1),
+    SMTP_PORT: z.coerce.number().default(587),
+    SMTP_USER: z.string().min(1),
+    SMTP_PASSWORD: z.string().min(1),
+    SMTP_FROM_EMAIL: z.string().email(),
+    SMTP_FROM_NAME: z.string().min(1),
   },
 
   /**
@@ -61,6 +69,14 @@ export const env = createEnv({
     // Client
     NEXT_PUBLIC_APP_URL: process.env.NEXT_PUBLIC_APP_URL,
     NEXT_PUBLIC_BETTER_AUTH_URL: process.env.NEXT_PUBLIC_BETTER_AUTH_URL,
+    
+    // SMTP
+    SMTP_HOST: process.env.SMTP_HOST,
+    SMTP_PORT: process.env.SMTP_PORT,
+    SMTP_USER: process.env.SMTP_USER,
+    SMTP_PASSWORD: process.env.SMTP_PASSWORD,
+    SMTP_FROM_EMAIL: process.env.SMTP_FROM_EMAIL,
+    SMTP_FROM_NAME: process.env.SMTP_FROM_NAME,
   },
 
   /**

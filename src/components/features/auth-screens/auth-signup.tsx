@@ -42,7 +42,7 @@ export function AuthSignup() {
             email: value.email,
             password: value.password,
             name: value.email.split("@")[0], // Use email prefix as name
-            callbackURL: "/dashboard",
+            callbackURL: "/auth/login",
           })
           .then((res) => {
             if (res.error) {
@@ -58,7 +58,8 @@ export function AuthSignup() {
 
       toast.promise(signupPromise, {
         loading: "Creating account...",
-        success: "Account created successfully",
+        success:
+          "Account created successfully, check your email for verification",
         error: (err) => err?.message || "Failed to create account",
       });
 
