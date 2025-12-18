@@ -18,10 +18,10 @@ import {
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { authForgotPasswordSchema } from "@/schemas/auth/auth-forgot-password";
-import { auth } from "@/server/auth";
+import { authClient } from "@/lib/auth-client";
 import { useForm } from "@tanstack/react-form";
 import Link from "next/link";
-import React from "react";
+import { toast } from "sonner";
 
 export function AuthForgotPassword() {
   const form = useForm({
@@ -32,11 +32,32 @@ export function AuthForgotPassword() {
       onSubmit: authForgotPasswordSchema,
     },
     onSubmit: async ({ value }) => {
-      await auth.api.forgetPasswordEmailOTP({
-        body: {
-          email: value.email,
-        },
+      const forgotPromise = new Promise<unknown>((resolve, reject) => {
+        authClient
+          .requestPasswordReset({
+            email: value.email,
+            redirectTo: "/auth/reset-password",
+          })
+          .then((res) => {
+            if (res.error) {
+              reject(
+                new Error(res.error.message || "Failed to send reset email")
+              );
+            } else {
+              resolve(res.data);
+            }
+          })
+          .catch(reject);
       });
+
+      toast.promise(forgotPromise, {
+        loading: "Sending reset link...",
+        success: "Reset link sent! Check your email.",
+        error: (err) => err?.message || "Failed to send reset email",
+      });
+
+      await forgotPromise;
+      form.reset();
     },
   });
 
@@ -86,13 +107,18 @@ export function AuthForgotPassword() {
           </form>
           <div className="flex justify-center py-5">
             <CardAction className="w-full">
-              <Button
-                className="w-full"
-                type="submit"
-                form="forgot-password-form"
-              >
-                Send Reset Link
-              </Button>
+              <form.Subscribe selector={(state) => state.isSubmitting}>
+                {(isSubmitting) => (
+                  <Button
+                    className="w-full"
+                    type="submit"
+                    form="forgot-password-form"
+                    disabled={isSubmitting}
+                  >
+                    {isSubmitting ? "Sending..." : "Send Reset Link"}
+                  </Button>
+                )}
+              </form.Subscribe>
             </CardAction>
           </div>
         </CardContent>

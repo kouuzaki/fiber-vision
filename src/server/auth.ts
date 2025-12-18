@@ -7,7 +7,6 @@ import { sendEmail } from "@/lib/email-sender";
 import VerificationEmail from "@/emails/verification-email";
 import ForgotPasswordEmail from "@/emails/forgot-password-email";
 
-
 export const auth = betterAuth({
   database: drizzleAdapter(db, {
     provider: "pg",

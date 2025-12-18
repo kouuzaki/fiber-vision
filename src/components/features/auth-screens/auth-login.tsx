@@ -99,7 +99,6 @@ export function AuthLogin() {
                         onChange={(e) => fieldApi.handleChange(e.target.value)}
                         aria-invalid={isInvalid}
                         placeholder="Enter your email"
-                        disabled={form.state.isSubmitting}
                       />
                       <FieldError errors={fieldApi.state.meta.errors} />
                     </Field>
@@ -135,7 +134,6 @@ export function AuthLogin() {
                         onChange={(e) => fieldApi.handleChange(e.target.value)}
                         aria-invalid={isInvalid}
                         placeholder="Enter your password"
-                        disabled={form.state.isSubmitting}
                       />
                       <FieldError errors={fieldApi.state.meta.errors} />
                     </Field>
@@ -154,7 +152,6 @@ export function AuthLogin() {
                         onCheckedChange={(checked) =>
                           fieldApi.handleChange(checked === true)
                         }
-                        disabled={form.state.isSubmitting}
                       />
                       <FieldLabel htmlFor="rememberMe" className="font-normal">
                         Remember me

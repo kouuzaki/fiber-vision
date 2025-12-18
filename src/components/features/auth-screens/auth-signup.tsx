@@ -64,6 +64,7 @@ export function AuthSignup() {
       });
 
       await signupPromise;
+      form.reset();
     },
   });
 
@@ -102,7 +103,6 @@ export function AuthSignup() {
                         onChange={(e) => fieldApi.handleChange(e.target.value)}
                         aria-invalid={isInvalid}
                         placeholder="Enter your email"
-                        disabled={form.state.isSubmitting}
                       />
                       <FieldError errors={fieldApi.state.meta.errors} />
                     </Field>
@@ -125,7 +125,6 @@ export function AuthSignup() {
                         onChange={(e) => fieldApi.handleChange(e.target.value)}
                         aria-invalid={isInvalid}
                         placeholder="Create a password"
-                        disabled={form.state.isSubmitting}
                       />
                       <FieldError errors={fieldApi.state.meta.errors} />
                     </Field>
@@ -153,7 +152,6 @@ export function AuthSignup() {
                         onChange={(e) => fieldApi.handleChange(e.target.value)}
                         aria-invalid={isInvalid}
                         placeholder="Re-enter your password"
-                        disabled={form.state.isSubmitting}
                       />
                       <FieldError errors={fieldApi.state.meta.errors} />
                     </Field>
