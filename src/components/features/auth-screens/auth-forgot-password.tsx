@@ -18,6 +18,7 @@ import {
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { authForgotPasswordSchema } from "@/schemas/auth/auth-forgot-password";
+import { auth } from "@/server/auth";
 import { useForm } from "@tanstack/react-form";
 import Link from "next/link";
 import React from "react";
@@ -31,8 +32,11 @@ export function AuthForgotPassword() {
       onSubmit: authForgotPasswordSchema,
     },
     onSubmit: async ({ value }) => {
-      console.log("Form submitted:", value);
-      // Handle forgot password logic here
+      await auth.api.forgetPasswordEmailOTP({
+        body: {
+          email: value.email,
+        },
+      });
     },
   });
 

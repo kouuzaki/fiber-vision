@@ -19,22 +19,48 @@ import {
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { authLoginSchema } from "@/schemas/auth/auth-login";
+import { signIn } from "@/lib/auth-client";
 import { useForm } from "@tanstack/react-form";
 import Link from "next/link";
-import React from "react";
+import { Checkbox } from "@/components/ui/checkbox";
+import { toast } from "sonner";
 
 export function AuthLogin() {
   const form = useForm({
     defaultValues: {
       email: "",
       password: "",
+      rememberMe: false,
     },
     validators: {
       onSubmit: authLoginSchema,
     },
     onSubmit: async ({ value }) => {
-      console.log("Form submitted:", value);
-      // Handle login logic here
+      const loginPromise = new Promise((resolve, reject) => {
+        signIn
+          .email({
+            email: value.email,
+            password: value.password,
+            rememberMe: value.rememberMe,
+            callbackURL: "/dashboard",
+          })
+          .then((res) => {
+            if (res.error) {
+              reject(new Error(res.error.message || "Failed to log in"));
+            } else {
+              resolve(res.data);
+            }
+          })
+          .catch(reject);
+      });
+
+      toast.promise(loginPromise, {
+        loading: "Logging in...",
+        success: "Logged in successfully",
+        error: (err) => err?.message || "Failed to log in",
+      });
+
+      await loginPromise;
     },
   });
 
@@ -44,7 +70,7 @@ export function AuthLogin() {
         <CardHeader className="text-center">
           <CardTitle className="text-2xl">Sign In</CardTitle>
           <CardDescription>
-            Welcome back! Please enter your details.
+            x Welcome back! Please enter your details.
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -73,6 +99,7 @@ export function AuthLogin() {
                         onChange={(e) => fieldApi.handleChange(e.target.value)}
                         aria-invalid={isInvalid}
                         placeholder="Enter your email"
+                        disabled={form.state.isSubmitting}
                       />
                       <FieldError errors={fieldApi.state.meta.errors} />
                     </Field>
@@ -108,8 +135,30 @@ export function AuthLogin() {
                         onChange={(e) => fieldApi.handleChange(e.target.value)}
                         aria-invalid={isInvalid}
                         placeholder="Enter your password"
+                        disabled={form.state.isSubmitting}
                       />
                       <FieldError errors={fieldApi.state.meta.errors} />
+                    </Field>
+                  );
+                }}
+              </form.Field>
+              <form.Field name="rememberMe">
+                {(fieldApi) => {
+                  return (
+                    <Field orientation="horizontal">
+                      <Checkbox
+                        id="rememberMe"
+                        defaultChecked
+                        checked={fieldApi.state.value}
+                        onBlur={fieldApi.handleBlur}
+                        onCheckedChange={(checked) =>
+                          fieldApi.handleChange(checked === true)
+                        }
+                        disabled={form.state.isSubmitting}
+                      />
+                      <FieldLabel htmlFor="rememberMe" className="font-normal">
+                        Remember me
+                      </FieldLabel>
                     </Field>
                   );
                 }}
@@ -118,17 +167,29 @@ export function AuthLogin() {
           </form>
           <div className="flex justify-center py-5">
             <CardAction className="w-full flex flex-col gap-2">
-              <Button className="w-full" type="submit" form="login-form">
-                Sign In
-              </Button>
-              <Button
-                variant="secondary"
-                className="w-full flex items-center gap-2"
-                type="button"
-              >
-                <GoogleIcon size={20} />
-                <span>Login With Google</span>
-              </Button>
+              <form.Subscribe selector={(state) => state.isSubmitting}>
+                {(isSubmitting) => (
+                  <>
+                    <Button
+                      className="w-full"
+                      type="submit"
+                      form="login-form"
+                      disabled={isSubmitting}
+                    >
+                      {isSubmitting ? "Signing In..." : "Sign In"}
+                    </Button>
+                    <Button
+                      variant="secondary"
+                      className="w-full flex items-center gap-2"
+                      type="button"
+                      disabled={isSubmitting}
+                    >
+                      <GoogleIcon size={20} />
+                      <span>Login With Google</span>
+                    </Button>
+                  </>
+                )}
+              </form.Subscribe>
             </CardAction>
           </div>
         </CardContent>

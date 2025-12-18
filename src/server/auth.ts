@@ -11,7 +11,7 @@ export const auth = betterAuth({
   }),
   appName: env.APP_NAME,
   secret: env.BETTER_AUTH_SECRET,
-  baseURL: env.BETTER_AUTH_URL,
+  baseURL: env.NEXT_PUBLIC_BETTER_AUTH_URL,
   emailAndPassword: {
     enabled: true,
   },

@@ -20,9 +20,10 @@ import {
 import { Input } from "@/components/ui/input";
 import { InputPasswordLabel } from "@/components/ui/input-password-label";
 import { authSignupSchema } from "@/schemas/auth/auth-signup";
+import { signUp } from "@/lib/auth-client";
 import { useForm } from "@tanstack/react-form";
 import Link from "next/link";
-import React from "react";
+import { toast } from "sonner";
 
 export function AuthSignup() {
   const form = useForm({
@@ -35,8 +36,33 @@ export function AuthSignup() {
       onSubmit: authSignupSchema,
     },
     onSubmit: async ({ value }) => {
-      console.log("Form submitted:", value);
-      // Handle signup logic here
+      const signupPromise = new Promise((resolve, reject) => {
+        signUp
+          .email({
+            email: value.email,
+            password: value.password,
+            name: value.email.split("@")[0], // Use email prefix as name
+            callbackURL: "/dashboard",
+          })
+          .then((res) => {
+            if (res.error) {
+              reject(
+                new Error(res.error.message || "Failed to create account")
+              );
+            } else {
+              resolve(res.data);
+            }
+          })
+          .catch(reject);
+      });
+
+      toast.promise(signupPromise, {
+        loading: "Creating account...",
+        success: "Account created successfully",
+        error: (err) => err?.message || "Failed to create account",
+      });
+
+      await signupPromise;
     },
   });
 
@@ -75,6 +101,7 @@ export function AuthSignup() {
                         onChange={(e) => fieldApi.handleChange(e.target.value)}
                         aria-invalid={isInvalid}
                         placeholder="Enter your email"
+                        disabled={form.state.isSubmitting}
                       />
                       <FieldError errors={fieldApi.state.meta.errors} />
                     </Field>
@@ -97,6 +124,7 @@ export function AuthSignup() {
                         onChange={(e) => fieldApi.handleChange(e.target.value)}
                         aria-invalid={isInvalid}
                         placeholder="Create a password"
+                        disabled={form.state.isSubmitting}
                       />
                       <FieldError errors={fieldApi.state.meta.errors} />
                     </Field>
@@ -124,6 +152,7 @@ export function AuthSignup() {
                         onChange={(e) => fieldApi.handleChange(e.target.value)}
                         aria-invalid={isInvalid}
                         placeholder="Re-enter your password"
+                        disabled={form.state.isSubmitting}
                       />
                       <FieldError errors={fieldApi.state.meta.errors} />
                     </Field>
@@ -134,17 +163,29 @@ export function AuthSignup() {
           </form>
           <div className="flex justify-center py-5">
             <CardAction className="w-full flex flex-col gap-2">
-              <Button className="w-full" type="submit" form="signup-form">
-                Create Account
-              </Button>
-              <Button
-                variant="secondary"
-                className="w-full flex items-center gap-2"
-                type="button"
-              >
-                <GoogleIcon size={20} />
-                <span>Sign Up With Google</span>
-              </Button>
+              <form.Subscribe selector={(state) => state.isSubmitting}>
+                {(isSubmitting) => (
+                  <>
+                    <Button
+                      className="w-full"
+                      type="submit"
+                      form="signup-form"
+                      disabled={isSubmitting}
+                    >
+                      {isSubmitting ? "Creating Account..." : "Create Account"}
+                    </Button>
+                    <Button
+                      variant="secondary"
+                      className="w-full flex items-center gap-2"
+                      type="button"
+                      disabled={isSubmitting}
+                    >
+                      <GoogleIcon size={20} />
+                      <span>Sign Up With Google</span>
+                    </Button>
+                  </>
+                )}
+              </form.Subscribe>
             </CardAction>
           </div>
         </CardContent>
