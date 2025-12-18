@@ -20,21 +20,35 @@ import { Spinner } from "@/components/ui/spinner";
 import { authResetPasswordSchema } from "@/schemas/auth/auth-reset-password";
 import { authClient } from "@/lib/auth-client";
 import { useForm } from "@tanstack/react-form";
-import { CheckCircle2Icon, KeyIcon } from "lucide-react";
+import { CheckCircle2Icon, KeyIcon, XCircleIcon } from "lucide-react";
 import Link from "next/link";
-import { useRouter, useSearchParams } from "next/navigation";
-import { useState } from "react";
+import { useSearchParams } from "next/navigation";
+import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { Input } from "@/components/ui/input";
+import { verifyResetToken } from "@/actions/verify-reset-token";
 
-type ResetStatus = "form" | "loading" | "success";
+type PageStatus = "verifying" | "form" | "submitting" | "success" | "error";
 
 export function AuthResetPassword() {
   const searchParams = useSearchParams();
-  const router = useRouter();
-  const [status, setStatus] = useState<ResetStatus>("form");
-
   const token = searchParams.get("token");
+
+  const [status, setStatus] = useState<PageStatus>(() =>
+    token ? "verifying" : "error"
+  );
+
+  // Verify token on mount
+  useEffect(() => {
+    if (!token) return;
+
+    const verify = async () => {
+      const isValid = await verifyResetToken(token);
+      setStatus(isValid ? "form" : "error");
+    };
+
+    verify();
+  }, [token]);
 
   const form = useForm({
     defaultValues: {
@@ -50,7 +64,7 @@ export function AuthResetPassword() {
         return;
       }
 
-      setStatus("loading");
+      setStatus("submitting");
 
       const resetPromise = new Promise((resolve, reject) => {
         authClient
@@ -84,8 +98,28 @@ export function AuthResetPassword() {
     },
   });
 
-  // Show error if no token
-  if (!token) {
+  // Verifying token state
+  if (status === "verifying") {
+    return (
+      <section>
+        <Card className="w-full max-w-md">
+          <CardHeader className="text-center">
+            <CardTitle className="text-2xl">Reset Password</CardTitle>
+            <CardDescription>Verifying your reset link...</CardDescription>
+          </CardHeader>
+          <CardContent className="flex flex-col items-center justify-center py-8">
+            <Spinner className="size-8 text-primary" />
+            <p className="mt-4 text-sm text-muted-foreground animate-pulse">
+              Please wait...
+            </p>
+          </CardContent>
+        </Card>
+      </section>
+    );
+  }
+
+  // Error state (no token or invalid token)
+  if (status === "error") {
     return (
       <section>
         <Card className="w-full max-w-md">
@@ -95,10 +129,20 @@ export function AuthResetPassword() {
               This password reset link is invalid or has expired.
             </CardDescription>
           </CardHeader>
+          <CardContent className="flex flex-col items-center justify-center py-8">
+            <div className="rounded-full bg-red-100 p-4 dark:bg-red-900/30">
+              <XCircleIcon className="size-12 text-red-600 dark:text-red-400" />
+            </div>
+          </CardContent>
           <CardFooter className="flex justify-center border-t pt-6">
-            <Button asChild>
-              <Link href="/auth/forgot-password">Request New Link</Link>
-            </Button>
+            <div className="flex flex-col gap-2 w-full">
+              <Button asChild className="w-full">
+                <Link href="/auth/forgot-password">Request New Link</Link>
+              </Button>
+              <Button asChild variant="ghost" className="w-full">
+                <Link href="/auth/login">Back to Login</Link>
+              </Button>
+            </div>
           </CardFooter>
         </Card>
       </section>
@@ -134,6 +178,7 @@ export function AuthResetPassword() {
     );
   }
 
+  // Form state (form or submitting)
   return (
     <section>
       <Card className="w-full max-w-md">
@@ -145,7 +190,7 @@ export function AuthResetPassword() {
           <CardDescription>Enter your new password below.</CardDescription>
         </CardHeader>
         <CardContent>
-          {status === "loading" ? (
+          {status === "submitting" ? (
             <div className="flex flex-col items-center justify-center py-8">
               <Spinner className="size-8 text-primary" />
               <p className="mt-4 text-sm text-muted-foreground animate-pulse">
@@ -182,7 +227,6 @@ export function AuthResetPassword() {
                             }
                             aria-invalid={isInvalid}
                             placeholder="Enter new password"
-                            disabled={form.state.isSubmitting}
                           />
                           <FieldError errors={fieldApi.state.meta.errors} />
                         </Field>
@@ -210,7 +254,6 @@ export function AuthResetPassword() {
                             }
                             aria-invalid={isInvalid}
                             placeholder="Confirm new password"
-                            disabled={form.state.isSubmitting}
                           />
                           <FieldError errors={fieldApi.state.meta.errors} />
                         </Field>
