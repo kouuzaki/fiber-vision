@@ -24,6 +24,7 @@ import { useForm } from "@tanstack/react-form";
 import Link from "next/link";
 import { Checkbox } from "@/components/ui/checkbox";
 import { toast } from "sonner";
+import { AUTH_PAGES } from "@/lib/constants";
 
 export function AuthLogin() {
   const form = useForm({
@@ -118,7 +119,7 @@ export function AuthLogin() {
                         <FieldLabel htmlFor="password">Password</FieldLabel>
                         <FieldLabel>
                           <Link
-                            href="/auth/forgot-password"
+                            href={AUTH_PAGES.FORGOT_PASSWORD}
                             className="hover:underline underline-offset-4"
                           >
                             Forgot password?
@@ -195,7 +196,7 @@ export function AuthLogin() {
             <span className="text-muted-foreground">
               Don&apos;t have an account?
             </span>
-            <Link href="/auth/signup" className="hover:underline">
+            <Link href={AUTH_PAGES.REGISTER} className="hover:underline">
               Sign Up
             </Link>
           </div>

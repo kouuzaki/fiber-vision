@@ -1,11 +1,12 @@
 import { auth } from '@/server/auth';
 import { NextRequest, NextResponse } from 'next/server';
+import { AUTH_PAGES } from './lib/constants';
 
 // Routes that require authentication (redirect to login if not logged in)
 const protectedRoutes = ['/dashboard'];
 
 // Routes only for guests (redirect to dashboard if already logged in)
-const authRoutes = ['/auth/login', '/auth/register', '/auth/forgot-password'];
+const authRoutes = [AUTH_PAGES.LOGIN, AUTH_PAGES.REGISTER, AUTH_PAGES.FORGOT_PASSWORD];
 
 export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
@@ -32,7 +33,7 @@ export async function proxy(request: NextRequest) {
 
   // Protected routes: redirect to login if not authenticated
   if (isProtectedRoute && !session) {
-    const loginUrl = new URL('/auth/login', request.url);
+    const loginUrl = new URL(AUTH_PAGES.LOGIN, request.url);
     loginUrl.searchParams.set('callbackUrl', pathname);
     return NextResponse.redirect(loginUrl);
   }

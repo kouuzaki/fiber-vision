@@ -28,6 +28,7 @@ export function SidebarNavItemComponent({
 }: SidebarNavItemProps) {
   const Icon = item.icon;
   const hasSubItems = item.items && item.items.length > 0;
+  const [isOpen, setIsOpen] = React.useState(false);
 
   // Check if any child is active (for keeping collapsible open)
   const hasActiveChild =
@@ -36,6 +37,13 @@ export function SidebarNavItemComponent({
       (subItem) =>
         pathname === subItem.url || pathname?.startsWith(subItem.url + "/")
     );
+
+  // Auto-open if child is active
+  React.useEffect(() => {
+    if (hasActiveChild) {
+      setIsOpen(true);
+    }
+  }, [hasActiveChild]);
 
   // For items without sub-items: exact match only
   // For items with sub-items: active if exact match OR any child is active
@@ -67,18 +75,23 @@ export function SidebarNavItemComponent({
   // Collapsible item with sub-items - matches example styling exactly
   return (
     <Collapsible
+      open={isOpen}
+      onOpenChange={setIsOpen}
       asChild
-      defaultOpen={hasActiveChild}
       className="group/collapsible"
     >
       <SidebarMenuItem>
-        <SidebarMenuButton tooltip={item.title} asChild isActive={isActive}>
-          <CollapsibleTrigger>
-            <Icon />
+        <CollapsibleTrigger asChild>
+          <SidebarMenuButton tooltip={item.title} isActive={isActive}>
+            <Icon className="size-4 shrink-0" />
             <span>{item.title}</span>
-            <ChevronRightIcon className="ml-auto transition-transform duration-100 group-data-open/collapsible:rotate-90" />
-          </CollapsibleTrigger>
-        </SidebarMenuButton>
+            <ChevronRightIcon
+              className={`ml-auto size-4 shrink-0 transition-transform duration-200 ${
+                isOpen ? "rotate-90" : ""
+              }`}
+            />
+          </SidebarMenuButton>
+        </CollapsibleTrigger>
         <CollapsibleContent>
           <SidebarMenuSub>
             {item.items?.map((subItem) => (

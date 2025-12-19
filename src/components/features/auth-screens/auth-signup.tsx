@@ -24,6 +24,7 @@ import { signUp } from "@/lib/auth-client";
 import { useForm } from "@tanstack/react-form";
 import Link from "next/link";
 import { toast } from "sonner";
+import { AUTH_PAGES } from "@/lib/constants";
 
 export function AuthSignup() {
   const form = useForm({
@@ -42,7 +43,7 @@ export function AuthSignup() {
             email: value.email,
             password: value.password,
             name: value.email.split("@")[0], // Use email prefix as name
-            callbackURL: "/auth/login",
+            callbackURL: AUTH_PAGES.LOGIN,
           })
           .then((res) => {
             if (res.error) {
@@ -193,7 +194,7 @@ export function AuthSignup() {
             <span className="text-muted-foreground">
               Already have an account?
             </span>
-            <Link href="/auth/login" className="hover:underline">
+            <Link href={AUTH_PAGES.LOGIN} className="hover:underline">
               Sign In
             </Link>
           </div>

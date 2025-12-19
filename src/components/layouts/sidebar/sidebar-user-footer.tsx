@@ -26,7 +26,8 @@ import {
 import { ChevronsUpDownIcon } from "lucide-react";
 import type { SidebarUser } from "@/types/sidebar-types";
 import { authClient } from "@/lib/auth-client";
-import { useRouter } from "next/navigation";
+import { useRouter } from "nextjs-toploader/app";
+import { AUTH_PAGES } from "@/lib/constants";
 
 interface SidebarUserFooterProps {
   user: SidebarUser;
@@ -48,7 +49,7 @@ export function SidebarUserFooter({ user }: SidebarUserFooterProps) {
     await authClient.signOut({
       fetchOptions: {
         onSuccess: () => {
-          router.push("/login");
+          router.push(AUTH_PAGES.LOGIN);
         },
       },
     });

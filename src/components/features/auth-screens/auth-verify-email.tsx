@@ -11,9 +11,11 @@ import {
 } from "@/components/ui/card";
 import { Spinner } from "@/components/ui/spinner";
 import { authClient } from "@/lib/auth-client";
+import { AUTH_PAGES } from "@/lib/constants";
 import { CheckCircle2Icon, XCircleIcon } from "lucide-react";
 import Link from "next/link";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
+import { useRouter } from "nextjs-toploader/app";
 import { useEffect, useState } from "react";
 
 type VerifyStatus = "loading" | "success" | "error";
@@ -136,10 +138,10 @@ export function AuthVerifyEmail() {
           {status === "error" && (
             <div className="flex flex-col gap-2 w-full">
               <Button asChild variant="outline" className="w-full">
-                <Link href="/auth/login">Back to Login</Link>
+                <Link href={AUTH_PAGES.LOGIN}>Back to Login</Link>
               </Button>
               <Button asChild variant="ghost" className="w-full">
-                <Link href="/auth/signup">Create New Account</Link>
+                <Link href={AUTH_PAGES.REGISTER}>Create New Account</Link>
               </Button>
             </div>
           )}

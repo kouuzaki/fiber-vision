@@ -27,6 +27,7 @@ import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { Input } from "@/components/ui/input";
 import { verifyResetToken } from "@/actions/verify-reset-token";
+import { AUTH_PAGES } from "@/lib/constants";
 
 type PageStatus = "verifying" | "form" | "submitting" | "success" | "error";
 
@@ -137,10 +138,10 @@ export function AuthResetPassword() {
           <CardFooter className="flex justify-center border-t pt-6">
             <div className="flex flex-col gap-2 w-full">
               <Button asChild className="w-full">
-                <Link href="/auth/forgot-password">Request New Link</Link>
+                <Link href={AUTH_PAGES.FORGOT_PASSWORD}>Request New Link</Link>
               </Button>
               <Button asChild variant="ghost" className="w-full">
-                <Link href="/auth/login">Back to Login</Link>
+                <Link href={AUTH_PAGES.LOGIN}>Back to Login</Link>
               </Button>
             </div>
           </CardFooter>
@@ -170,7 +171,7 @@ export function AuthResetPassword() {
           </CardContent>
           <CardFooter className="flex justify-center border-t pt-6">
             <Button asChild className="w-full">
-              <Link href="/auth/login">Sign In</Link>
+              <Link href={AUTH_PAGES.LOGIN}>Sign In</Link>
             </Button>
           </CardFooter>
         </Card>
@@ -284,7 +285,7 @@ export function AuthResetPassword() {
             <span className="text-muted-foreground">
               Remember your password?
             </span>
-            <Link href="/auth/login" className="hover:underline">
+            <Link href={AUTH_PAGES.LOGIN} className="hover:underline">
               Sign In
             </Link>
           </div>

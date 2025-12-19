@@ -22,6 +22,7 @@ import { authClient } from "@/lib/auth-client";
 import { useForm } from "@tanstack/react-form";
 import Link from "next/link";
 import { toast } from "sonner";
+import { AUTH_PAGES } from "@/lib/constants";
 
 export function AuthForgotPassword() {
   const form = useForm({
@@ -36,7 +37,7 @@ export function AuthForgotPassword() {
         authClient
           .requestPasswordReset({
             email: value.email,
-            redirectTo: "/auth/reset-password",
+            redirectTo: AUTH_PAGES.RESET_PASSWORD,
           })
           .then((res) => {
             if (res.error) {
@@ -127,7 +128,7 @@ export function AuthForgotPassword() {
             <span className="text-muted-foreground">
               Remember your password?
             </span>
-            <Link href="/auth/login" className="hover:underline">
+            <Link href={AUTH_PAGES.LOGIN} className="hover:underline">
               Sign In
             </Link>
           </div>
