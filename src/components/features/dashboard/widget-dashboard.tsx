@@ -4,43 +4,68 @@ import * as React from "react";
 import { GridStack } from "gridstack";
 import "gridstack/dist/gridstack.min.css";
 import "@/styles/gridstack-theme.css";
-import type {
-  WidgetDefinition,
-  WidgetConfig,
-  DashboardLayout,
-} from "@/types/widget-types";
+import type { WidgetDefinition, WidgetConfig } from "@/types/widget-types";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { PlusIcon, Trash2Icon } from "lucide-react";
+import {
+  PlusIcon,
+  Trash2Icon,
+  SaveIcon,
+  FolderIcon,
+  Loader2Icon,
+} from "lucide-react";
 import { AddWidgetDrawer } from "@/components/widgets/add-widget-drawer";
 import { WidgetConfigDialog } from "@/components/widgets/widget-config-dialog";
 import { WidgetRenderer } from "@/components/widgets/widget-renderers";
-
-const LAYOUT_STORAGE_KEY = "dashboard-widget-layout";
+import { WidgetCard } from "@/components/widgets/widget-card";
+import { useDashboardLayout } from "@/hooks/use-dashboard-layout";
+import { toast } from "sonner";
+import {
+  Empty,
+  EmptyContent,
+  EmptyDescription,
+  EmptyHeader,
+  EmptyMedia,
+  EmptyTitle,
+} from "@/components/ui/empty";
 
 export function WidgetDashboard() {
+  const {
+    layout,
+    isLoading,
+    isError,
+    isSaving,
+    isClearing,
+    saveLayout,
+    clearLayout,
+    setLocalLayout,
+  } = useDashboardLayout();
+
   const [widgets, setWidgets] = React.useState<WidgetConfig[]>([]);
   const [drawerOpen, setDrawerOpen] = React.useState(false);
   const [configDialogOpen, setConfigDialogOpen] = React.useState(false);
   const [selectedWidget, setSelectedWidget] =
     React.useState<WidgetDefinition | null>(null);
   const [mounted, setMounted] = React.useState(false);
+  const [hasChanges, setHasChanges] = React.useState(false);
 
   const containerRef = React.useRef<HTMLDivElement>(null);
   const gridRef = React.useRef<GridStack | null>(null);
+  const initialLoadRef = React.useRef(true);
 
-  // Load saved layout on mount
+  // Sync widgets from server
+  React.useEffect(() => {
+    if (!isLoading && layout.length > 0 && initialLoadRef.current) {
+      setWidgets(layout);
+      initialLoadRef.current = false;
+    }
+  }, [layout, isLoading]);
+
+  // Mount
   React.useEffect(() => {
     setMounted(true);
-    try {
-      const stored = localStorage.getItem(LAYOUT_STORAGE_KEY);
-      if (stored) {
-        const layout: DashboardLayout = JSON.parse(stored);
-        setWidgets(layout.widgets);
-      }
-    } catch (e) {
-      console.error("Failed to load layout:", e);
-    }
+    setTimeout(() => {
+      initialLoadRef.current = false;
+    }, 500);
   }, []);
 
   // Initialize GridStack
@@ -83,6 +108,7 @@ export function WidgetDashboard() {
           return widget;
         })
       );
+      setHasChanges(true);
     });
 
     return () => {
@@ -92,19 +118,14 @@ export function WidgetDashboard() {
     };
   }, [mounted, widgets.length]);
 
-  // Auto-save layout
+  // Track changes
   React.useEffect(() => {
-    if (widgets.length > 0) {
-      const layout: DashboardLayout = {
-        widgets,
-        version: 1,
-        updatedAt: new Date().toISOString(),
-      };
-      localStorage.setItem(LAYOUT_STORAGE_KEY, JSON.stringify(layout));
+    if (!initialLoadRef.current && mounted) {
+      setHasChanges(true);
     }
-  }, [widgets]);
+  }, [widgets, mounted]);
 
-  // Handlers with useCallback
+  // Handlers
   const handleOpenDrawer = React.useCallback(() => {
     setDrawerOpen(true);
   }, []);
@@ -126,28 +147,49 @@ export function WidgetDashboard() {
   }, []);
 
   const handleRemoveWidget = React.useCallback((id: string) => {
-    // Only update React state - let React handle DOM removal
-    // GridStack will sync on next render
     setWidgets((prev) => prev.filter((w) => w.id !== id));
   }, []);
 
-  const handleClearAll = React.useCallback(() => {
-    if (gridRef.current) {
-      gridRef.current.removeAll();
+  const handleClearAll = React.useCallback(async () => {
+    try {
+      await clearLayout();
+      setWidgets([]);
+      setHasChanges(false);
+      toast.success("Dashboard cleared");
+    } catch {
+      toast.error("Failed to clear dashboard");
     }
-    setWidgets([]);
-    localStorage.removeItem(LAYOUT_STORAGE_KEY);
-  }, []);
+  }, [clearLayout]);
+
+  const handleSaveLayout = React.useCallback(async () => {
+    try {
+      await saveLayout(widgets);
+      setLocalLayout(widgets);
+      setHasChanges(false);
+      toast.success("Layout saved");
+    } catch {
+      toast.error("Failed to save layout");
+    }
+  }, [widgets, saveLayout, setLocalLayout]);
 
   const handleConfigDialogChange = React.useCallback((open: boolean) => {
     setConfigDialogOpen(open);
     if (!open) setSelectedWidget(null);
   }, []);
 
-  if (!mounted) {
+  if (!mounted || isLoading) {
     return (
       <div className="h-96 flex items-center justify-center text-muted-foreground">
+        <Loader2Icon className="size-6 animate-spin mr-2" />
         Loading...
+      </div>
+    );
+  }
+
+  if (isError) {
+    return (
+      <div className="h-96 flex items-center justify-center text-destructive">
+        Failed to load dashboard. Please refresh the page.
       </div>
     );
   }
@@ -158,39 +200,54 @@ export function WidgetDashboard() {
     <div className="space-y-4">
       {/* Toolbar */}
       <div className="flex items-center justify-between">
-        <div>
-          <h2 className="text-lg font-semibold">Dashboard Widgets</h2>
-          <p className="text-sm text-muted-foreground">
-            Drag widgets to rearrange
-          </p>
-        </div>
+        <div className=""></div>
         <div className="flex items-center gap-2">
-          {!isEmpty && (
-            <Button variant="outline" size="sm" onClick={handleClearAll}>
-              <Trash2Icon className="size-4 mr-2" />
-              Clear All
+          {hasChanges && (
+            <Button
+              variant="secondary"
+              size="sm"
+              onClick={handleSaveLayout}
+              disabled={isSaving}
+            >
+              {isSaving ? (
+                <Loader2Icon className="size-4 mr-2 animate-spin" />
+              ) : (
+                <SaveIcon className="size-4 mr-2" />
+              )}
+              Save Layout
             </Button>
           )}
-          <Button size="sm" onClick={handleOpenDrawer}>
-            <PlusIcon className="size-4 mr-2" />
-            Add Widget
-          </Button>
+          {!isEmpty && (
+            <Button size="sm" onClick={handleOpenDrawer}>
+              <PlusIcon className="size-4 mr-2" />
+              Add Widget
+            </Button>
+          )}
         </div>
       </div>
 
       {/* Empty State */}
       {isEmpty ? (
-        <div className="border-2 border-dashed border-border rounded-xl min-h-[400px] flex flex-col items-center justify-center text-muted-foreground">
-          <div className="text-4xl mb-4">📊</div>
-          <div className="font-medium">No widgets yet</div>
-          <p className="text-sm mb-4">
-            Add widgets to customize your dashboard
-          </p>
-          <Button onClick={handleOpenDrawer}>
-            <PlusIcon className="size-4 mr-2" />
-            Add Widget
-          </Button>
-        </div>
+        <Empty>
+          <EmptyHeader>
+            <EmptyMedia variant="icon">
+              <FolderIcon />
+            </EmptyMedia>
+            <EmptyTitle>No Widgets Yet</EmptyTitle>
+            <EmptyDescription>
+              You can add widgets to your dashboard by clicking the &quot;Add
+              Widget&quot; button above.
+            </EmptyDescription>
+          </EmptyHeader>
+          <EmptyContent>
+            <div className="flex gap-2">
+              <Button size="sm" onClick={handleOpenDrawer}>
+                <PlusIcon className="size-4 mr-2" />
+                Add Widget
+              </Button>
+            </div>
+          </EmptyContent>
+        </Empty>
       ) : (
         <div ref={containerRef} className="grid-stack">
           {widgets.map((widget) => (
@@ -206,29 +263,12 @@ export function WidgetDashboard() {
               gs-min-h={widget.minH}
             >
               <div className="grid-stack-item-content">
-                <Card className="h-full group">
-                  <CardHeader className="flex flex-row items-center justify-between py-2 px-3 space-y-0">
-                    <CardTitle className="text-sm font-medium">
-                      {widget.title}
-                    </CardTitle>
-                    <div className="flex items-center gap-2">
-                      <span className="widget-size-badge">
-                        {widget.w}×{widget.h}
-                      </span>
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        className="size-6 opacity-0 group-hover:opacity-100 text-destructive hover:bg-destructive/10"
-                        onClick={() => handleRemoveWidget(widget.id)}
-                      >
-                        <Trash2Icon className="size-3.5" />
-                      </Button>
-                    </div>
-                  </CardHeader>
-                  <CardContent className="p-3 pt-0 h-[calc(100%-44px)] overflow-auto">
-                    <WidgetRenderer widget={widget} />
-                  </CardContent>
-                </Card>
+                <WidgetCard
+                  widget={widget}
+                  onRemove={() => handleRemoveWidget(widget.id)}
+                >
+                  <WidgetRenderer widget={widget} />
+                </WidgetCard>
               </div>
             </div>
           ))}

@@ -3,7 +3,7 @@
 import * as React from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { XIcon } from "lucide-react";
+import { Trash2Icon } from "lucide-react";
 import type { WidgetConfig } from "@/types/widget-types";
 import { cn } from "@/lib/utils";
 
@@ -35,7 +35,7 @@ export function WidgetCard({
               className="size-6 opacity-0 group-hover:opacity-100 transition-opacity text-destructive hover:text-destructive hover:bg-destructive/10"
               onClick={onRemove}
             >
-              <XIcon className="size-3.5" />
+              <Trash2Icon className="size-3.5" />
             </Button>
           )}
         </div>

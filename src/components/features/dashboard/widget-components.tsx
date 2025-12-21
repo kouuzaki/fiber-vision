@@ -20,10 +20,11 @@ import {
 export function StatCardPreview({ data }: WidgetPreviewProps) {
   const value = (data?.value as number) ?? 127;
   const subtitle = (data?.subtitle as string) ?? "Configured cameras";
+
   return (
     <div className="p-3 text-center">
-      <div className="text-2xl font-bold">{value}</div>
-      <div className="text-xs text-muted-foreground">{subtitle}</div>
+      <p className="text-2xl font-bold">{value}</p>
+      <p className="text-xs text-muted-foreground">{subtitle}</p>
     </div>
   );
 }
@@ -31,10 +32,11 @@ export function StatCardPreview({ data }: WidgetPreviewProps) {
 export function StatCardContent({ widget }: WidgetComponentProps) {
   const value = (widget.data?.value as number) ?? 0;
   const subtitle = (widget.data?.subtitle as string) ?? "";
+
   return (
     <div className="h-full flex flex-col justify-center">
-      <div className="text-3xl font-bold">{value}</div>
-      <div className="text-sm text-muted-foreground">{subtitle}</div>
+      <p className="text-3xl font-bold">{value}</p>
+      <p className="text-sm text-muted-foreground">{subtitle}</p>
     </div>
   );
 }
@@ -45,6 +47,7 @@ export function StatCardContent({ widget }: WidgetComponentProps) {
 export function OccupancyPreview({ data }: WidgetPreviewProps) {
   const current = (data?.current as number) ?? 0;
   const average = (data?.average as number) ?? 0;
+
   return (
     <div className="p-3 space-y-2">
       <div className="flex gap-2 text-xs">
@@ -64,6 +67,7 @@ export function OccupancyContent({ widget }: WidgetComponentProps) {
   const current = (widget.data?.current as number) ?? 0;
   const average = (widget.data?.average as number) ?? 0;
   const zone = (widget.data?.zone as string) ?? "Zone";
+
   return (
     <div className="h-full flex flex-col">
       <div className="flex items-center justify-between mb-4">
@@ -79,7 +83,7 @@ export function OccupancyContent({ widget }: WidgetComponentProps) {
       </div>
       <div className="flex-1 flex flex-col items-center justify-center text-muted-foreground">
         <UsersIcon className="size-12 mb-2" />
-        <div className="font-medium">No Data Available</div>
+        <p className="font-medium">No Data Available</p>
       </div>
     </div>
   );
@@ -108,7 +112,7 @@ export function ZoneCountingPreview() {
 export function ZoneCountingContent() {
   return (
     <div className="h-full flex flex-col">
-      <div className="text-sm text-muted-foreground mb-2">Zone Analysis</div>
+      <p className="text-sm text-muted-foreground mb-2">Zone Analysis</p>
       <div className="flex-1 bg-muted/30 rounded-lg flex items-end p-4 gap-1">
         {[40, 65, 30, 80, 55, 70, 45, 90].map((h, i) => (
           <div
@@ -144,7 +148,7 @@ export function LineCrossingPreview() {
 export function LineCrossingContent() {
   return (
     <div className="h-full flex flex-col">
-      <div className="text-sm text-muted-foreground mb-2">Line Crossing</div>
+      <p className="text-sm text-muted-foreground mb-2">Line Crossing</p>
       <div className="flex-1 bg-muted/30 rounded-lg flex items-center p-4">
         <svg viewBox="0 0 200 60" className="w-full h-full">
           <polyline
@@ -181,7 +185,7 @@ export function LineChartPreview() {
 export function LineChartContent() {
   return (
     <div className="h-full flex flex-col">
-      <div className="text-sm text-muted-foreground mb-2">Trend</div>
+      <p className="text-sm text-muted-foreground mb-2">Trend</p>
       <div className="flex-1 bg-muted/30 rounded-lg flex items-center p-4">
         <svg viewBox="0 0 200 60" className="w-full h-full">
           <polyline
@@ -219,7 +223,7 @@ export function BarChartPreview() {
 export function BarChartContent() {
   return (
     <div className="h-full flex flex-col">
-      <div className="text-sm text-muted-foreground mb-2">Bar Chart</div>
+      <p className="text-sm text-muted-foreground mb-2">Bar Chart</p>
       <div className="flex-1 bg-muted/30 rounded-lg flex items-end p-4 gap-2">
         {[60, 80, 45, 90, 70, 55, 85].map((h, i) => (
           <div
@@ -240,7 +244,7 @@ export function CameraFeedPreview() {
   return (
     <div className="p-3 flex flex-col items-center justify-center text-muted-foreground">
       <CameraIcon className="size-8" />
-      <div className="text-xs mt-1">Camera</div>
+      <p className="text-xs mt-1">Camera</p>
     </div>
   );
 }
@@ -250,7 +254,7 @@ export function CameraFeedContent() {
     <div className="h-full bg-muted/30 rounded-lg flex items-center justify-center text-muted-foreground">
       <div className="text-center">
         <CameraIcon className="size-12 mx-auto mb-2" />
-        <div className="font-medium">No camera selected</div>
+        <p className="font-medium">No camera selected</p>
       </div>
     </div>
   );
@@ -273,11 +277,11 @@ export function EventListPreview() {
 export function EventListContent() {
   return (
     <div className="h-full flex flex-col gap-2">
-      <div className="text-sm text-muted-foreground">Events</div>
+      <p className="text-sm text-muted-foreground">Events</p>
       <div className="flex-1 flex items-center justify-center text-muted-foreground">
         <div className="text-center">
           <ListIcon className="size-8 mx-auto mb-2" />
-          <div className="text-sm">No events</div>
+          <p className="text-sm">No events</p>
         </div>
       </div>
     </div>

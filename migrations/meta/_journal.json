@@ -8,6 +8,13 @@
       "when": 1765994615393,
       "tag": "0000_glossy_argent",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1766331575837,
+      "tag": "0001_damp_manta",
+      "breakpoints": true
     }
   ]
 }
