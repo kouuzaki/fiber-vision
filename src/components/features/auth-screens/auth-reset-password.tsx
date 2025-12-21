@@ -26,7 +26,6 @@ import { useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { Input } from "@/components/ui/input";
-import { verifyResetToken } from "@/actions/verify-reset-token";
 import { AUTH_PAGES } from "@/lib/constants";
 
 type PageStatus = "verifying" | "form" | "submitting" | "success" | "error";
@@ -44,8 +43,15 @@ export function AuthResetPassword() {
     if (!token) return;
 
     const verify = async () => {
-      const isValid = await verifyResetToken(token);
-      setStatus(isValid ? "form" : "error");
+      try {
+        const res = await fetch(
+          `/api/auth/verify-reset-token?token=${encodeURIComponent(token)}`
+        );
+        const data = await res.json();
+        setStatus(data.valid ? "form" : "error");
+      } catch {
+        setStatus("error");
+      }
     };
 
     verify();

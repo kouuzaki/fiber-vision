@@ -28,12 +28,6 @@ export default async function DashboardLayout({
         user={sidebarUser}
         // userRole can be passed when role is available
         // userRole={'admin'}
-        breadcrumbPathLabels={{
-          settings: "Settings",
-          users: "User Management",
-          reports: "Reports",
-          analytics: "Analytics",
-        }}
       >
         {children}
       </SidebarLayout>

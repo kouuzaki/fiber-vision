@@ -20,7 +20,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { InputPasswordLabel } from "@/components/ui/input-password-label";
 import { authSignupSchema } from "@/schemas/auth/auth-signup";
-import { signUp } from "@/lib/auth-client";
+import { authClient } from "@/lib/auth-client";
 import { useForm } from "@tanstack/react-form";
 import Link from "next/link";
 import { toast } from "sonner";
@@ -29,6 +29,8 @@ import { AUTH_PAGES } from "@/lib/constants";
 export function AuthSignup() {
   const form = useForm({
     defaultValues: {
+      name: "",
+      username: "",
       email: "",
       password: "",
       confirmPassword: "",
@@ -38,11 +40,12 @@ export function AuthSignup() {
     },
     onSubmit: async ({ value }) => {
       const signupPromise = new Promise((resolve, reject) => {
-        signUp
+        authClient.signUp
           .email({
             email: value.email,
             password: value.password,
-            name: value.email.split("@")[0], // Use email prefix as name
+            name: value.name,
+            username: value.username,
             callbackURL: AUTH_PAGES.LOGIN,
           })
           .then((res) => {
@@ -88,6 +91,52 @@ export function AuthSignup() {
             id="signup-form"
           >
             <FieldGroup>
+              <form.Field name="name">
+                {(fieldApi) => {
+                  const isInvalid =
+                    fieldApi.state.meta.isTouched &&
+                    fieldApi.state.meta.errors.length > 0;
+
+                  return (
+                    <Field data-invalid={isInvalid}>
+                      <FieldLabel htmlFor="name">Name</FieldLabel>
+                      <Input
+                        id="name"
+                        value={fieldApi.state.value}
+                        onBlur={fieldApi.handleBlur}
+                        onChange={(e) => fieldApi.handleChange(e.target.value)}
+                        aria-invalid={isInvalid}
+                        placeholder="Enter your full name"
+                      />
+                      <FieldError errors={fieldApi.state.meta.errors} />
+                    </Field>
+                  );
+                }}
+              </form.Field>
+
+              <form.Field name="username">
+                {(fieldApi) => {
+                  const isInvalid =
+                    fieldApi.state.meta.isTouched &&
+                    fieldApi.state.meta.errors.length > 0;
+
+                  return (
+                    <Field data-invalid={isInvalid}>
+                      <FieldLabel htmlFor="username">Username</FieldLabel>
+                      <Input
+                        id="username"
+                        value={fieldApi.state.value}
+                        onBlur={fieldApi.handleBlur}
+                        onChange={(e) => fieldApi.handleChange(e.target.value)}
+                        aria-invalid={isInvalid}
+                        placeholder="Choose a username"
+                      />
+                      <FieldError errors={fieldApi.state.meta.errors} />
+                    </Field>
+                  );
+                }}
+              </form.Field>
+
               <form.Field name="email">
                 {(fieldApi) => {
                   const isInvalid =

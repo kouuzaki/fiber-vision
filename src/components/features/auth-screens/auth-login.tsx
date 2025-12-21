@@ -19,7 +19,7 @@ import {
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { authLoginSchema } from "@/schemas/auth/auth-login";
-import { signIn } from "@/lib/auth-client";
+import { authClient, signIn } from "@/lib/auth-client";
 import { useForm } from "@tanstack/react-form";
 import Link from "next/link";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -29,7 +29,7 @@ import { AUTH_PAGES } from "@/lib/constants";
 export function AuthLogin() {
   const form = useForm({
     defaultValues: {
-      email: "",
+      identifier: "",
       password: "",
       rememberMe: false,
     },
@@ -37,22 +37,44 @@ export function AuthLogin() {
       onSubmit: authLoginSchema,
     },
     onSubmit: async ({ value }) => {
+      const isEmail = value.identifier.includes("@");
+
       const loginPromise = new Promise((resolve, reject) => {
-        signIn
-          .email({
-            email: value.email,
-            password: value.password,
-            rememberMe: value.rememberMe,
-            callbackURL: "/dashboard",
-          })
-          .then((res) => {
-            if (res.error) {
-              reject(new Error(res.error.message || "Failed to log in"));
-            } else {
-              resolve(res.data);
-            }
-          })
-          .catch(reject);
+        if (isEmail) {
+          // Login with email
+          signIn
+            .email({
+              email: value.identifier,
+              password: value.password,
+              rememberMe: value.rememberMe,
+              callbackURL: "/dashboard",
+            })
+            .then((res) => {
+              if (res.error) {
+                reject(new Error(res.error.message || "Failed to log in"));
+              } else {
+                resolve(res.data);
+              }
+            })
+            .catch(reject);
+        } else {
+          // Login with username
+          authClient.signIn
+            .username({
+              username: value.identifier,
+              password: value.password,
+              rememberMe: value.rememberMe,
+            })
+            .then((res) => {
+              if (res.error) {
+                reject(new Error(res.error.message || "Failed to log in"));
+              } else {
+                resolve(res.data);
+                window.location.href = "/dashboard";
+              }
+            })
+            .catch(reject);
+        }
       });
 
       toast.promise(loginPromise, {
@@ -71,7 +93,7 @@ export function AuthLogin() {
         <CardHeader className="text-center">
           <CardTitle className="text-2xl">Sign In</CardTitle>
           <CardDescription>
-            x Welcome back! Please enter your details.
+            Welcome back! Please enter your details.
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -84,7 +106,7 @@ export function AuthLogin() {
             id="login-form"
           >
             <FieldGroup>
-              <form.Field name="email">
+              <form.Field name="identifier">
                 {(fieldApi) => {
                   const isInvalid =
                     fieldApi.state.meta.isTouched &&
@@ -92,14 +114,16 @@ export function AuthLogin() {
 
                   return (
                     <Field data-invalid={isInvalid}>
-                      <FieldLabel htmlFor="email">Email</FieldLabel>
+                      <FieldLabel htmlFor="identifier">
+                        Email or Username
+                      </FieldLabel>
                       <Input
-                        id="email"
+                        id="identifier"
                         value={fieldApi.state.value}
                         onBlur={fieldApi.handleBlur}
                         onChange={(e) => fieldApi.handleChange(e.target.value)}
                         aria-invalid={isInvalid}
-                        placeholder="Enter your email"
+                        placeholder="Enter your email or username"
                       />
                       <FieldError errors={fieldApi.state.meta.errors} />
                     </Field>

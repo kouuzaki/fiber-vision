@@ -17,10 +17,6 @@ interface SidebarNavProps {
 export function SidebarNav({ groups }: SidebarNavProps) {
   const pathname = usePathname();
 
-  React.useEffect(() => {
-    console.log("[SidebarNav] Current pathname:", pathname);
-  }, [pathname]);
-
   return (
     <>
       {groups.map((group) => (

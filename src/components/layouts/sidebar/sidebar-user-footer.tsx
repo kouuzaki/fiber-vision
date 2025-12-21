@@ -23,11 +23,12 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
-import { ChevronsUpDownIcon } from "lucide-react";
+import { ChevronsUpDownIcon, LogOutIcon } from "lucide-react";
 import type { SidebarUser } from "@/types/sidebar-types";
 import { authClient } from "@/lib/auth-client";
 import { useRouter } from "nextjs-toploader/app";
 import { AUTH_PAGES } from "@/lib/constants";
+import { ThemeSwitcherMultiButton } from "@/components/elements/theme-switcher-multi-button";
 
 interface SidebarUserFooterProps {
   user: SidebarUser;
@@ -116,7 +117,17 @@ export function SidebarUserFooter({ user }: SidebarUserFooterProps) {
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
             <DropdownMenuGroup>
+              <DropdownMenuItem asChild variant="none">
+                <div className="flex items-center justify-between w-full">
+                  <span>Theme</span>
+                  <ThemeSwitcherMultiButton />
+                </div>
+              </DropdownMenuItem>
+            </DropdownMenuGroup>
+            <DropdownMenuSeparator />
+            <DropdownMenuGroup>
               <DropdownMenuItem onClick={handleLogout} variant="destructive">
+                <LogOutIcon />
                 Log out
               </DropdownMenuItem>
             </DropdownMenuGroup>
