@@ -27,7 +27,7 @@ export default async function DashboardLayout({
       <SidebarLayout
         user={sidebarUser}
         // userRole can be passed when role is available
-        // userRole={session.user.role as UserRole}
+        // userRole={'admin'}
         breadcrumbPathLabels={{
           settings: "Settings",
           users: "User Management",

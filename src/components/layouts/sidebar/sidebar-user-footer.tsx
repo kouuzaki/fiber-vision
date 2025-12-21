@@ -45,6 +45,15 @@ export function SidebarUserFooter({ user }: SidebarUserFooterProps) {
       .slice(0, 2);
   };
 
+  // Truncate email: "longusername@gmail.com" -> "longuser...@gmail.com"
+  const truncateEmail = (email: string, maxLocalLength: number = 8) => {
+    const [localPart, domain] = email.split("@");
+    if (!domain || localPart.length <= maxLocalLength) {
+      return email;
+    }
+    return `${localPart.slice(0, maxLocalLength)}...@${domain}`;
+  };
+
   const handleLogout = async () => {
     await authClient.signOut({
       fetchOptions: {
@@ -72,7 +81,9 @@ export function SidebarUserFooter({ user }: SidebarUserFooterProps) {
               </Avatar>
               <div className="grid flex-1 text-left text-sm leading-tight">
                 <span className="truncate font-medium">{user.name}</span>
-                <span className="truncate text-xs">{user.email}</span>
+                <span className="truncate text-xs">
+                  {truncateEmail(user.email)}
+                </span>
               </div>
               <ChevronsUpDownIcon />
             </SidebarMenuButton>
@@ -89,7 +100,10 @@ export function SidebarUserFooter({ user }: SidebarUserFooterProps) {
                   </ItemMedia>
                   <ItemContent>
                     <ItemTitle>{user.name}</ItemTitle>
-                    <ItemDescription> {user.email}</ItemDescription>
+                    <ItemDescription>
+                      {" "}
+                      {truncateEmail(user.email)}
+                    </ItemDescription>
                   </ItemContent>
                 </Item>
               </DropdownMenuLabel>
@@ -102,7 +116,7 @@ export function SidebarUserFooter({ user }: SidebarUserFooterProps) {
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
             <DropdownMenuGroup>
-              <DropdownMenuItem onClick={handleLogout}>
+              <DropdownMenuItem onClick={handleLogout} variant="destructive">
                 Log out
               </DropdownMenuItem>
             </DropdownMenuGroup>

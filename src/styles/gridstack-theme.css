@@ -1,0 +1,124 @@
+/* GridStack Custom Theme for shadcn */
+
+/* Grid Container */
+.grid-stack {
+  min-height: 400px;
+  background: transparent;
+}
+
+/* Grid Item */
+.grid-stack-item {
+  z-index: 1;
+}
+
+.grid-stack-item-content {
+  background: transparent;
+  border-radius: var(--radius);
+  overflow: visible;
+}
+
+/* ================================================
+   PLACEHOLDER - Blue background when dragging
+   Shows where widget will be placed
+   ================================================ */
+.grid-stack .grid-stack-placeholder,
+.grid-stack > .grid-stack-placeholder,
+.grid-stack-placeholder {
+  background: hsl(217 91% 60% / 0.20) !important;
+  border: 2px dashed hsl(217 91% 60%) !important;
+  border-radius: 12px !important;
+  z-index: 0 !important;
+}
+
+.grid-stack-placeholder .placeholder-content,
+.grid-stack-placeholder > .placeholder-content,
+.placeholder-content {
+  background: transparent !important;
+  border: none !important;
+  background-color: transparent !important;
+}
+
+/* Also style the item being resized placeholder */
+.grid-stack > .grid-stack-item.ui-resizable-resizing > .grid-stack-item-content {
+  opacity: 0.9;
+}
+
+/* Item being dragged */
+.grid-stack > .grid-stack-item.ui-draggable-dragging,
+.grid-stack-item.ui-draggable-dragging {
+  z-index: 100 !important;
+  opacity: 0.85;
+}
+
+.grid-stack > .grid-stack-item.ui-draggable-dragging > .grid-stack-item-content {
+  box-shadow: 0 15px 50px rgba(0, 0, 0, 0.5);
+  transform: scale(1.02);
+}
+
+/* Resize handles */
+.grid-stack > .grid-stack-item > .ui-resizable-handle {
+  background: transparent;
+}
+
+.grid-stack > .grid-stack-item > .ui-resizable-se {
+  right: 4px;
+  bottom: 4px;
+  width: 16px;
+  height: 16px;
+  background-image: none;
+}
+
+.grid-stack > .grid-stack-item > .ui-resizable-se::after {
+  content: "";
+  position: absolute;
+  right: 2px;
+  bottom: 2px;
+  width: 8px;
+  height: 8px;
+  border-right: 2px solid hsl(var(--muted-foreground) / 0.4);
+  border-bottom: 2px solid hsl(var(--muted-foreground) / 0.4);
+  border-radius: 0 0 2px 0;
+}
+
+.grid-stack > .grid-stack-item:hover > .ui-resizable-se::after {
+  border-color: hsl(217 91% 60%);
+}
+
+/* Widget size badge */
+.widget-size-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.125rem 0.5rem;
+  font-size: 0.75rem;
+  font-weight: 500;
+  background: hsl(217 91% 60%);
+  color: white;
+  border-radius: 9999px;
+}
+
+/* Widget preview card in drawer */
+.widget-preview {
+  position: relative;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.widget-preview:hover {
+  transform: translateY(-2px);
+}
+
+.widget-preview:hover .widget-preview-overlay {
+  opacity: 1;
+}
+
+.widget-preview-overlay {
+  position: absolute;
+  inset: 0;
+  background: hsl(217 91% 60% / 0.1);
+  border: 2px solid hsl(217 91% 60%);
+  border-radius: var(--radius);
+  opacity: 0;
+  transition: opacity 0.2s ease;
+  pointer-events: none;
+}

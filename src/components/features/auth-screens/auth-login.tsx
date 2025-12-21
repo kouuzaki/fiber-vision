@@ -181,6 +181,12 @@ export function AuthLogin() {
                       className="w-full flex items-center gap-2"
                       type="button"
                       disabled={isSubmitting}
+                      onClick={() => {
+                        signIn.social({
+                          provider: "google",
+                          callbackURL: "/dashboard",
+                        });
+                      }}
                     >
                       <GoogleIcon size={20} />
                       <span>Login With Google</span>
