@@ -2,7 +2,7 @@ import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { db } from "@/databases/db";
 import { env } from "@/env";
-import { username, emailOTP, twoFactor, lastLoginMethod, jwt, openAPI } from "better-auth/plugins";
+import { username, emailOTP, twoFactor, lastLoginMethod, jwt, openAPI, admin } from "better-auth/plugins";
 import { sendEmail } from "@/lib/email-sender";
 import VerificationEmail from "@/emails/verification-email";
 import ForgotPasswordEmail from "@/emails/forgot-password-email";
@@ -64,6 +64,6 @@ export const auth = betterAuth({
     twoFactor({}),
     lastLoginMethod(),
     jwt(),
-
+    admin(),
   ],
 });
