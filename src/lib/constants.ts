@@ -4,3 +4,9 @@ export const AUTH_PAGES = {
     FORGOT_PASSWORD: "/auth/forgot-password",
     RESET_PASSWORD: "/auth/reset-password",
 }
+
+export const USER_SETTINGS_PAGES = {
+    GLOBAL_SETTINGS: "/settings",
+    ACCOUNT: "/settings/account",
+    BILLING: "/settings/billing",   
+}

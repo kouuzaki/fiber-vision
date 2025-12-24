@@ -23,7 +23,7 @@ import type { BreadcrumbItemConfig } from "@/types/sidebar-types";
 interface CustomBreadcrumbProps {
   /** Manual breadcrumb items - overrides auto-generation */
   items?: BreadcrumbItemConfig[];
-  /** Custom home label (default: "Dashboard") */
+  /** Custom home label (default: "Home") */
   homeLabel?: string;
   /** Custom home href (default: "/dashboard") */
   homeHref?: string;
@@ -43,7 +43,7 @@ interface CustomBreadcrumbProps {
  */
 export function CustomBreadcrumb({
   items,
-  homeLabel = "Dashboard",
+  homeLabel = "Home",
   homeHref = "/dashboard",
   showHome = true,
   separator,

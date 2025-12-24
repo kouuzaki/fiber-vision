@@ -23,12 +23,13 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
-import { ChevronsUpDownIcon, LogOutIcon } from "lucide-react";
+import { ChevronsUpDownIcon, LogOutIcon, SettingsIcon } from "lucide-react";
 import type { SidebarUser } from "@/types/sidebar-types";
 import { authClient } from "@/lib/auth-client";
 import { useRouter } from "nextjs-toploader/app";
-import { AUTH_PAGES } from "@/lib/constants";
+import { AUTH_PAGES, USER_SETTINGS_PAGES } from "@/lib/constants";
 import { ThemeSwitcherMultiButton } from "@/components/elements/theme-switcher-multi-button";
+import Link from "next/link";
 
 interface SidebarUserFooterProps {
   user: SidebarUser;
@@ -111,9 +112,12 @@ export function SidebarUserFooter({ user }: SidebarUserFooterProps) {
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
             <DropdownMenuGroup>
-              <DropdownMenuItem>Account</DropdownMenuItem>
-              <DropdownMenuItem>Billing</DropdownMenuItem>
-              <DropdownMenuItem>Settings</DropdownMenuItem>
+              <DropdownMenuItem asChild>
+                <Link href={USER_SETTINGS_PAGES.GLOBAL_SETTINGS}>
+                  <SettingsIcon />
+                  Settings
+                </Link>
+              </DropdownMenuItem>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
             <DropdownMenuGroup>

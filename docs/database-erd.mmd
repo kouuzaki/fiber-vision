@@ -1,0 +1,138 @@
+erDiagram
+    USER ||--o{ SESSION : has
+    USER ||--o{ ACCOUNT : has
+    USER ||--o{ TWO_FACTOR : has
+    USER ||--|| DASHBOARD_LAYOUT : owns
+    USER ||--o{ CAMERA : owns
+    USER ||--o{ FACE_REGISTRY : manages
+    CAMERA ||--o{ CAMERA_EVENT : registers
+    CAMERA_EVENT ||--o{ EVENT_LOG : generates
+    EVENT_TYPE ||--o{ CAMERA_EVENT : defines
+    FACE_REGISTRY ||--o{ EVENT_LOG : matches
+
+    USER {
+        text id PK
+        text name "NOT NULL"
+        text email "UNIQUE, NOT NULL"
+        boolean email_verified "DEFAULT false"
+        text image
+        timestamp created_at
+        timestamp updated_at
+        text username "UNIQUE"
+        text display_username
+        boolean two_factor_enabled "DEFAULT false"
+    }
+
+    SESSION {
+        text id PK
+        timestamp expires_at "NOT NULL"
+        text token "UNIQUE, NOT NULL"
+        timestamp created_at
+        timestamp updated_at
+        text ip_address
+        text user_agent
+        text user_id FK "CASCADE DELETE"
+    }
+
+    ACCOUNT {
+        text id PK
+        text account_id "NOT NULL"
+        text provider_id "NOT NULL"
+        text user_id FK "CASCADE DELETE"
+        text access_token
+        text refresh_token
+        text id_token
+        timestamp access_token_expires_at
+        timestamp refresh_token_expires_at
+        text scope
+        text password
+        timestamp created_at
+        timestamp updated_at
+    }
+
+    VERIFICATION {
+        text id PK
+        text identifier "NOT NULL"
+        text value "NOT NULL"
+        timestamp expires_at "NOT NULL"
+        timestamp created_at
+        timestamp updated_at
+    }
+
+    TWO_FACTOR {
+        text id PK
+        text secret "NOT NULL"
+        text backup_codes "NOT NULL"
+        text user_id FK "CASCADE DELETE"
+    }
+
+    JWKS {
+        text id PK
+        text public_key "NOT NULL"
+        text private_key "NOT NULL"
+        timestamp created_at "NOT NULL"
+        timestamp expires_at
+    }
+
+    DASHBOARD_LAYOUT {
+        text id PK
+        text user_id FK "UNIQUE, CASCADE DELETE"
+        jsonb layout "WidgetConfig[]"
+        integer version "DEFAULT 1"
+        timestamp created_at
+        timestamp updated_at
+    }
+
+    CAMERA {
+        text id PK
+        text name "NOT NULL"
+        text ip_address "NOT NULL"
+        text user_id FK "CASCADE DELETE"
+        timestamp created_at
+        timestamp updated_at
+    }
+
+    CAMERA_EVENT {
+        text id PK
+        text camera_id FK "CASCADE DELETE"
+        text event_type_id FK "NOT NULL"
+        text name "NOT NULL"
+        boolean is_enabled "DEFAULT true"
+        jsonb config "Event-specific configuration"
+        timestamp created_at
+        timestamp updated_at
+    }
+
+    EVENT_TYPE {
+        text id PK
+        text code "UNIQUE, NOT NULL (line_crossing, zone_counting, face_recognition, people_counting)"
+        text name "NOT NULL"
+        text description
+        jsonb default_config "Default configuration template"
+        timestamp created_at
+        timestamp updated_at
+    }
+
+    EVENT_LOG {
+        text id PK
+        text camera_event_id FK "CASCADE DELETE"
+        text event_type_code "NOT NULL (denormalized for fast query)"
+        timestamp event_time "NOT NULL"
+        jsonb payload "Detection data (count, direction, coordinates, etc)"
+        text snapshot_url "Optional image capture"
+        text face_registry_id FK "NULL, only for face_recognition"
+        float confidence "Detection confidence score"
+        timestamp created_at
+    }
+
+    FACE_REGISTRY {
+        text id PK
+        text user_id FK "CASCADE DELETE"
+        text name "NOT NULL (Person name)"
+        text label "Optional grouping label"
+        text image_url "Reference photo"
+        jsonb embedding "Face embedding vector for matching"
+        boolean is_active "DEFAULT true"
+        timestamp created_at
+        timestamp updated_at
+    }
