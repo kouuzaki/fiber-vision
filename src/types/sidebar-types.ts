@@ -3,7 +3,7 @@ import type { LucideIcon } from "lucide-react";
 /**
  * Available user roles for access control
  */
-export type UserRole = "admin" | "user" | "manager" | "viewer";
+export type UserRole = "admin" | "manager" | "operator" | "user";
 
 /**
  * Sidebar navigation sub-item configuration

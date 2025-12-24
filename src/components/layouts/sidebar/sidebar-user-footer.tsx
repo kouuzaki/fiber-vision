@@ -24,6 +24,8 @@ import {
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
 import { ChevronsUpDownIcon, LogOutIcon, SettingsIcon } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { roleDisplayNames } from "@/lib/permissions";
 import type { SidebarUser } from "@/types/sidebar-types";
 import { authClient } from "@/lib/auth-client";
 import { useRouter } from "nextjs-toploader/app";
@@ -83,9 +85,21 @@ export function SidebarUserFooter({ user }: SidebarUserFooterProps) {
               </Avatar>
               <div className="grid flex-1 text-left text-sm leading-tight">
                 <span className="truncate font-medium">{user.name}</span>
-                <span className="truncate text-xs">
-                  {truncateEmail(user.email)}
-                </span>
+                <div className="flex items-center gap-1.5">
+                  <span className="truncate text-xs text-muted-foreground">
+                    {truncateEmail(user.email)}
+                  </span>
+                  {user.role && (
+                    <Badge
+                      variant="secondary"
+                      className="text-[10px] px-1 py-0 h-4"
+                    >
+                      {roleDisplayNames[
+                        user.role as keyof typeof roleDisplayNames
+                      ] || user.role}
+                    </Badge>
+                  )}
+                </div>
               </div>
               <ChevronsUpDownIcon />
             </SidebarMenuButton>

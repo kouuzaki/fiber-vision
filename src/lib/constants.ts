@@ -10,3 +10,14 @@ export const USER_SETTINGS_PAGES = {
     ACCOUNT: "/settings/account",
     BILLING: "/settings/billing",   
 }
+
+export const ADMIN_PAGES = {
+    USERS: "/dashboard/users",
+    ROLES: "/dashboard/users/roles",
+}
+
+export const DASHBOARD_PAGES = {
+    HOME: "/dashboard",
+    ANALYTICS: "/dashboard/analytics",
+    REPORTS: "/dashboard/reports",
+}
